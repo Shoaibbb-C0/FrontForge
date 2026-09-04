@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 import connectDB from "./config/db.js";
 
@@ -26,6 +27,8 @@ const startServer = async () => {
   app.listen(PORT, () => {
     console.log(`FrontForge API running on port ${PORT}`);
   });
+  app.use(notFound);
+  app.use(errorHandler);
 };
 
 startServer();
