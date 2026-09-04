@@ -7,7 +7,7 @@ function AppLayout() {
       <Sidebar />
 
       <main className="min-w-0 flex-1">
-        <div className="mx-auto w-full max-w-[1600px] px-5 py-8 sm:px-7 lg:px-10 lg:py-10 xl:px-14">
+        <div className="mx-auto w-full max-w-[1600px] px-5 py-7 sm:px-7 lg:px-10 lg:py-9 xl:px-12">
           <Outlet />
         </div>
       </main>

@@ -1,96 +1,157 @@
+import {
+  ArrowUpRight,
+  Boxes,
+  Clapperboard,
+  FileText,
+  Library,
+  Plus,
+} from "lucide-react";
+
 const stats = [
   {
     label: "Components",
     value: "00",
+    icon: Boxes,
   },
   {
     label: "Animations",
     value: "00",
+    icon: Clapperboard,
   },
   {
     label: "References",
     value: "00",
+    icon: Library,
   },
   {
     label: "Notes",
     value: "00",
+    icon: FileText,
   },
 ];
 
 function DashboardPage() {
   return (
     <section>
-      <header className="mb-14 border-b border-forge-border pb-10">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-forge-accent">
-          Dashboard / 01
-        </p>
+      <header className="border-b border-forge-border pb-8">
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <span className="font-mono text-xs uppercase tracking-[0.14em] text-forge-muted">
+            Workspace / Dashboard
+          </span>
 
-        <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-end">
-          <h2 className="max-w-4xl text-[clamp(2.8rem,7vw,6.75rem)] font-semibold leading-[0.92] tracking-[-0.065em]">
-            Build better
-            <br />
-            frontend.
-          </h2>
+          <button className="flex items-center gap-2 rounded-forge-md bg-forge-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-forge-accent-strong">
+            <Plus size={16} />
+            Add resource
+          </button>
+        </div>
 
-          <p className="max-w-sm text-base leading-7 text-forge-muted">
-            Study interfaces, save patterns, understand motion, and turn what
-            you learn into reusable frontend knowledge.
+        <div className="grid gap-6 xl:grid-cols-[1fr_400px] xl:items-end">
+          <div>
+            <h2 className="max-w-4xl font-display text-[clamp(2.8rem,5vw,5.5rem)] font-semibold leading-[0.94] tracking-[-0.06em]">
+              Your frontend
+              <br />
+              knowledge system.
+            </h2>
+          </div>
+
+          <p className="max-w-md text-[15px] leading-7 text-forge-muted">
+            Study interfaces, break down patterns, understand motion and turn
+            everything you learn into reusable frontend knowledge.
           </p>
         </div>
       </header>
 
-      <div className="grid gap-px overflow-hidden rounded-forge-lg border border-forge-border bg-forge-border sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => (
-          <article
-            key={stat.label}
-            className="bg-forge-surface p-6 sm:p-7"
-          >
-            <span className="text-sm text-forge-muted">
-              {stat.label}
-            </span>
+      <div className="grid border-b border-forge-border sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat, index) => {
+          const Icon = stat.icon;
 
-            <strong className="mt-8 block text-5xl font-semibold tracking-[-0.06em]">
-              {stat.value}
-            </strong>
-          </article>
-        ))}
+          return (
+            <article
+              key={stat.label}
+              className={[
+                "py-6 sm:px-6",
+                index !== 0 ? "sm:border-l sm:border-forge-border" : "",
+              ].join(" ")}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-forge-muted">
+                  {stat.label}
+                </span>
+
+                <Icon
+                  size={17}
+                  strokeWidth={1.7}
+                  className="text-forge-subtle"
+                />
+              </div>
+
+              <strong className="mt-8 block font-display text-4xl font-semibold tracking-[-0.055em]">
+                {stat.value}
+              </strong>
+            </article>
+          );
+        })}
       </div>
 
-      <div className="mt-10 grid gap-5 xl:grid-cols-[1.35fr_0.65fr]">
-        <article className="min-h-[300px] rounded-forge-lg border border-forge-border bg-forge-surface p-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-forge-muted">
-            Continue learning
-          </p>
+      <div className="mt-8 grid gap-5 xl:grid-cols-[1.4fr_0.6fr]">
+        <article className="rounded-forge-lg border border-forge-border bg-forge-surface p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-forge-muted">
+                Continue learning
+              </span>
 
-          <div className="mt-20">
-            <p className="text-2xl font-semibold tracking-[-0.04em]">
-              Your learning queue will appear here.
-            </p>
+              <h3 className="mt-2 font-display text-xl font-semibold tracking-[-0.035em]">
+                Learning queue
+              </h3>
+            </div>
 
-            <p className="mt-3 max-w-lg leading-7 text-forge-muted">
-              As FrontForge grows, this area will surface components,
-              animation concepts, references, and projects worth revisiting.
+            <button className="text-forge-muted transition hover:text-forge-text">
+              <ArrowUpRight size={19} />
+            </button>
+          </div>
+
+          <div className="mt-12 rounded-forge-md border border-forge-border bg-forge-bg p-5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-forge-accent-soft px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-forge-accent">
+                Level 01
+              </span>
+
+              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-forge-subtle">
+                Layout
+              </span>
+            </div>
+
+            <h4 className="mt-5 font-display text-2xl font-medium tracking-[-0.04em]">
+              Responsive editorial layouts
+            </h4>
+
+            <p className="mt-2 max-w-xl text-sm leading-6 text-forge-muted">
+              Study spacing, hierarchy, grid composition and responsive
+              art-direction before moving deeper into motion.
             </p>
           </div>
         </article>
 
-        <article className="min-h-[300px] rounded-forge-lg border border-forge-border bg-forge-accent p-7 text-white">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/70">
+        <article className="rounded-forge-lg border border-forge-border bg-forge-surface p-6">
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-forge-muted">
             Current track
-          </p>
+          </span>
 
-          <div className="mt-20">
-            <span className="font-mono text-sm text-white/70">
+          <div className="mt-12">
+            <span className="font-mono text-xs text-forge-accent">
               LEVEL / 01
             </span>
 
-            <h3 className="mt-3 text-3xl font-semibold tracking-[-0.05em]">
-              Clean websites
+            <h3 className="mt-3 font-display text-3xl font-semibold leading-tight tracking-[-0.05em]">
+              Clean
+              <br />
+              websites.
             </h3>
 
-            <p className="mt-3 leading-7 text-white/75">
-              Typography, layout, responsive systems, reusable sections and
-              polished interface patterns.
+            <p className="mt-4 text-sm leading-6 text-forge-muted">
+              Typography, responsive layout, reusable sections and polished
+              interface patterns.
             </p>
           </div>
         </article>
