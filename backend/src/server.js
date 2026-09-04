@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
+import connectDB from "./config/db.js";
+
 dotenv.config();
 
 const app = express();
@@ -18,6 +20,12 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`FrontForge API running on port ${PORT}`);
-});
+const startServer = async () => {
+  await connectDB();
+
+  app.listen(PORT, () => {
+    console.log(`FrontForge API running on port ${PORT}`);
+  });
+};
+
+startServer();
