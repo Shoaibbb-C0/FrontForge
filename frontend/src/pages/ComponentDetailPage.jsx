@@ -1,11 +1,7 @@
-import {
-  ArrowLeft,
-  ExternalLink,
-  Heart,
-  RotateCcw,
-} from "lucide-react";
+import { ArrowLeft, ExternalLink, Heart, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import PreviewRenderer from "../previews/PreviewRenderer";
 
 function ComponentDetailPage() {
   const { slug } = useParams();
@@ -24,9 +20,7 @@ function ComponentDetailPage() {
 
         const API_URL = import.meta.env.VITE_API_URL;
 
-        const response = await fetch(
-          `${API_URL}/api/components/${slug}`
-        );
+        const response = await fetch(`${API_URL}/api/components/${slug}`);
 
         if (!response.ok) {
           throw new Error("Failed to load component");
@@ -67,13 +61,7 @@ function ComponentDetailPage() {
     );
   }
 
-  const tabs = [
-    "preview",
-    "code",
-    "notes",
-    "reference",
-    "implementation",
-  ];
+  const tabs = ["preview", "code", "notes", "reference", "implementation"];
 
   return (
     <section>
@@ -161,21 +149,13 @@ function ComponentDetailPage() {
       </div>
 
       <div className="py-8">
-        {activeTab === "preview" && (
-          <PreviewTab component={component} />
-        )}
+        {activeTab === "preview" && <PreviewTab component={component} />}
 
-        {activeTab === "code" && (
-          <CodeTab component={component} />
-        )}
+        {activeTab === "code" && <CodeTab component={component} />}
 
-        {activeTab === "notes" && (
-          <NotesTab component={component} />
-        )}
+        {activeTab === "notes" && <NotesTab component={component} />}
 
-        {activeTab === "reference" && (
-          <ReferenceTab component={component} />
-        )}
+        {activeTab === "reference" && <ReferenceTab component={component} />}
 
         {activeTab === "implementation" && (
           <ImplementationTab component={component} />
@@ -194,35 +174,11 @@ function PreviewTab({ component }) {
             Live preview
           </span>
 
-          <p className="mt-1 text-sm text-forge-text">
-            {component.name}
-          </p>
+          <p className="mt-1 text-sm text-forge-text">{component.name}</p>
         </div>
 
-        <button
-          type="button"
-          className="flex items-center gap-2 text-xs text-forge-muted transition hover:text-forge-text"
-        >
-          <RotateCcw size={14} />
-          Reset
-        </button>
-      </div>
-
-      <div className="flex min-h-[480px] items-center justify-center bg-forge-bg p-6">
-        <div className="flex h-full min-h-[360px] w-full items-center justify-center rounded-forge-md border border-dashed border-forge-border bg-forge-surface-soft">
-          <div className="text-center">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-accent">
-              Preview system
-            </span>
-
-            <h2 className="mt-4 font-display text-3xl font-semibold tracking-[-0.045em]">
-              {component.name}
-            </h2>
-
-            <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-forge-muted">
-              The real runnable component preview will be mounted here.
-            </p>
-          </div>
+        <div className="overflow-hidden bg-forge-bg">
+          <PreviewRenderer slug={component.slug} />
         </div>
       </div>
     </div>
@@ -231,9 +187,7 @@ function PreviewTab({ component }) {
 
 function CodeTab({ component }) {
   const hasCode =
-    component.code?.jsx ||
-    component.code?.css ||
-    component.code?.javascript;
+    component.code?.jsx || component.code?.css || component.code?.javascript;
 
   if (!hasCode) {
     return (
@@ -255,10 +209,7 @@ function CodeTab({ component }) {
       )}
 
       {component.code?.javascript && (
-        <CodeBlock
-          title="JavaScript"
-          code={component.code.javascript}
-        />
+        <CodeBlock title="JavaScript" code={component.code.javascript} />
       )}
     </div>
   );
@@ -286,19 +237,13 @@ function NotesTab({ component }) {
     ["Why it works", component.notes?.whyItWorks],
     ["When to use", component.notes?.whenToUse],
     ["When not to use", component.notes?.whenNotToUse],
-    [
-      "Responsive behavior",
-      component.notes?.responsiveBehavior,
-    ],
+    ["Responsive behavior", component.notes?.responsiveBehavior],
   ];
 
   return (
     <div className="grid gap-px overflow-hidden rounded-forge-lg border border-forge-border bg-forge-border md:grid-cols-2">
       {notes.map(([title, value]) => (
-        <article
-          key={title}
-          className="min-h-[180px] bg-forge-surface p-6"
-        >
+        <article key={title} className="min-h-[180px] bg-forge-surface p-6">
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-accent">
             {title}
           </span>
@@ -314,8 +259,7 @@ function NotesTab({ component }) {
 
 function ReferenceTab({ component }) {
   const hasReference =
-    component.reference?.websiteName ||
-    component.reference?.url;
+    component.reference?.websiteName || component.reference?.url;
 
   if (!hasReference) {
     return (
@@ -333,8 +277,7 @@ function ReferenceTab({ component }) {
       </span>
 
       <h2 className="mt-4 font-display text-2xl font-semibold tracking-[-0.04em]">
-        {component.reference.websiteName ||
-          "External reference"}
+        {component.reference.websiteName || "External reference"}
       </h2>
 
       {component.reference.url && (
@@ -365,9 +308,8 @@ function ImplementationTab({ component }) {
         </h2>
 
         <p className="mt-4 text-sm leading-7 text-forge-muted">
-          Study the hierarchy, spacing, responsive behavior and
-          composition before recreating this pattern in your own
-          visual language.
+          Study the hierarchy, spacing, responsive behavior and composition
+          before recreating this pattern in your own visual language.
         </p>
       </article>
 
@@ -381,8 +323,8 @@ function ImplementationTab({ component }) {
         </h2>
 
         <p className="mt-4 text-sm leading-7 text-forge-muted">
-          Focus on understanding the layout before introducing
-          unnecessary complexity.
+          Focus on understanding the layout before introducing unnecessary
+          complexity.
         </p>
       </article>
     </div>
@@ -397,9 +339,7 @@ function EmptySection({ title, description }) {
           {title}
         </h2>
 
-        <p className="mt-3 text-sm leading-6 text-forge-muted">
-          {description}
-        </p>
+        <p className="mt-3 text-sm leading-6 text-forge-muted">{description}</p>
       </div>
     </div>
   );
@@ -417,9 +357,7 @@ function StateMessage({ eyebrow, title, description }) {
           {title}
         </h1>
 
-        <p className="mt-3 text-sm text-forge-muted">
-          {description}
-        </p>
+        <p className="mt-3 text-sm text-forge-muted">{description}</p>
       </div>
     </div>
   );
