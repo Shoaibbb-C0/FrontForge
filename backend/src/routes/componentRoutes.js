@@ -4,6 +4,7 @@ import {
   createComponent,
   getComponents,
   getComponentBySlug,
+  updateComponent,
 } from "../controllers/componentController.js";
 
 const router = express.Router();
@@ -13,6 +14,9 @@ router
   .get(getComponents)
   .post(createComponent);
 
-router.get("/:slug", getComponentBySlug);
+router
+  .route("/:slug")
+  .get(getComponentBySlug)
+  .patch(updateComponent);
 
 export default router;

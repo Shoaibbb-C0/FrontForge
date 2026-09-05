@@ -2,6 +2,8 @@ import { ArrowLeft, ExternalLink, Heart, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import PreviewRenderer from "../previews/PreviewRenderer";
+import ResponsivePreviewFrame from "../previews/ResponsivePreviewFrame";
+import { Copy } from "lucide-react";  
 
 function ComponentDetailPage() {
   const { slug } = useParams();
@@ -167,27 +169,29 @@ function ComponentDetailPage() {
 
 function PreviewTab({ component }) {
   return (
-    <div className="overflow-hidden rounded-forge-lg border border-forge-border bg-forge-surface">
-      <div className="flex items-center justify-between border-b border-forge-border px-5 py-4">
-        <div>
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-muted">
-            Live preview
-          </span>
+    <div>
+      <div className="mb-4">
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-muted">
+          Live preview
+        </span>
 
-          <p className="mt-1 text-sm text-forge-text">{component.name}</p>
-        </div>
-
-        <div className="overflow-hidden bg-forge-bg">
-          <PreviewRenderer slug={component.slug} />
-        </div>
+        <p className="mt-1 text-sm text-forge-text">
+          {component.name}
+        </p>
       </div>
+
+      <ResponsivePreviewFrame>
+        <PreviewRenderer slug={component.slug} />
+      </ResponsivePreviewFrame>
     </div>
   );
-}
+} 
 
 function CodeTab({ component }) {
   const hasCode =
-    component.code?.jsx || component.code?.css || component.code?.javascript;
+    component.code?.jsx ||
+    component.code?.css ||
+    component.code?.javascript;
 
   if (!hasCode) {
     return (
@@ -201,27 +205,53 @@ function CodeTab({ component }) {
   return (
     <div className="space-y-5">
       {component.code?.jsx && (
-        <CodeBlock title="React / JSX" code={component.code.jsx} />
+        <CodeBlock
+          title="React / JSX"
+          code={component.code.jsx}
+        />
       )}
 
       {component.code?.css && (
-        <CodeBlock title="CSS" code={component.code.css} />
+        <CodeBlock
+          title="CSS"
+          code={component.code.css}
+        />
       )}
 
       {component.code?.javascript && (
-        <CodeBlock title="JavaScript" code={component.code.javascript} />
+        <CodeBlock
+          title="JavaScript"
+          code={component.code.javascript}
+        />
       )}
     </div>
   );
 }
 
 function CodeBlock({ title, code }) {
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch (error) {
+      console.error("Copy failed:", error);
+    }
+  };
+
   return (
     <div className="overflow-hidden rounded-forge-lg border border-forge-border bg-forge-surface">
-      <div className="border-b border-forge-border px-5 py-3">
+      <div className="flex items-center justify-between border-b border-forge-border px-5 py-3">
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-muted">
           {title}
         </span>
+
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="flex items-center gap-2 text-xs text-forge-muted transition hover:text-forge-text"
+        >
+          <Copy size={14} />
+          Copy
+        </button>
       </div>
 
       <pre className="overflow-x-auto p-5 font-mono text-sm leading-6 text-forge-text">

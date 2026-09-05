@@ -85,3 +85,29 @@ export const createComponent = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const updateComponent = async (req, res, next) => {
+  try {
+    const component = await Component.findOneAndUpdate(
+      { slug: req.params.slug },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!component) {
+      res.status(404);
+      throw new Error("Component not found");
+    }
+
+    res.status(200).json({
+      success: true,
+      data: component,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
