@@ -87,3 +87,11 @@ a {
   background: var(--color-forge-accent);
   color: #ffffff;
 }
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

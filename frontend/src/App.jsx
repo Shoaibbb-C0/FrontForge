@@ -9,18 +9,20 @@ import ReferencesPage from "./pages/ReferencesPage";
 import NotesPage from "./pages/NotesPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import FavoritesPage from "./pages/FavoritesPage";
-
+import ComponentDetailPage from "./pages/ComponentDetailPage";
 function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="/components" element={<ComponentsPage />} />
+        <Route path="/components/:slug" element={<ComponentDetailPage />} />
         <Route path="/animations" element={<AnimationsPage />} />
         <Route path="/references" element={<ReferencesPage />} />
         <Route path="/notes" element={<NotesPage />} />
         <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
+        <Route path="/components" element={<ComponentDetailPage />} />
       </Route>
     </Routes>
   );
