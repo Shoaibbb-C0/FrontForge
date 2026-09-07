@@ -133,3 +133,29 @@ export const toggleFavorite = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteComponent = async (req, res, next) => {
+  try {
+    const component = await Component.findOne({
+      slug: req.params.slug,
+    });
+
+    if (!component) {
+      res.status(404);
+      throw new Error("Component not found");
+    }
+
+    await component.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Component deleted successfully",
+      data: {
+        id: component._id,
+        slug: component.slug,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
