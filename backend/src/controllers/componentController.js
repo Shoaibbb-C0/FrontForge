@@ -86,7 +86,6 @@ export const createComponent = async (req, res, next) => {
   }
 };
 
-
 export const updateComponent = async (req, res, next) => {
   try {
     const component = await Component.findOneAndUpdate(
@@ -95,13 +94,36 @@ export const updateComponent = async (req, res, next) => {
       {
         new: true,
         runValidators: true,
-      }
+      },
     );
 
     if (!component) {
       res.status(404);
       throw new Error("Component not found");
     }
+
+    res.status(200).json({
+      success: true,
+      data: component,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const toggleFavorite = async (req, res, next) => {
+  try {
+    const component = await Component.findOne({
+      slug: req.params.slug,
+    });
+
+    if (!component) {
+      res.status(404);
+      throw new Error("Component not found");
+    }
+
+    component.isFavorite = !component.isFavorite;
+
+    await component.save();
 
     res.status(200).json({
       success: true,

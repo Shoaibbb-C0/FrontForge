@@ -1,7 +1,7 @@
 import { ArrowUpRight, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 
-function ComponentCard({ component }) {
+function ComponentCard({ component, onFavoriteToggle }) {
   return (
     <article className="group overflow-hidden rounded-forge-lg border border-forge-border bg-forge-surface transition hover:border-forge-subtle">
       <div className="flex aspect-[16/10] items-center justify-center border-b border-forge-border bg-forge-bg p-6">
@@ -34,10 +34,27 @@ function ComponentCard({ component }) {
 
           <button
             type="button"
-            aria-label={`Favorite ${component.name}`}
-            className="text-forge-subtle transition hover:text-forge-text"
+            aria-label={
+              component.isFavorite
+                ? `Remove ${component.name} from favorites`
+                : `Add ${component.name} to favorites`
+            }
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onFavoriteToggle?.(component);
+            }}
+            className={[
+              "transition-colors duration-200",
+              component.isFavorite
+                ? "text-forge-accent"
+                : "text-forge-subtle hover:text-forge-text",
+            ].join(" ")}
           >
-            <Heart size={17} />
+            <Heart
+              size={17}
+              fill={component.isFavorite ? "currentColor" : "none"}
+            />
           </button>
         </div>
 
