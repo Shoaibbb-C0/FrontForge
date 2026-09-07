@@ -17,6 +17,7 @@ const categories = [
 ];
 
 function ComponentsPage() {
+  const [activeDifficulty, setActiveDifficulty] = useState("All");
   const [components, setComponents] = useState([]);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
@@ -32,9 +33,7 @@ function ComponentsPage() {
         setIsLoading(true);
         setError("");
 
-        const response = await fetch(
-          `${API_URL}/api/components`
-        );
+        const response = await fetch(`${API_URL}/api/components`);
 
         if (!response.ok) {
           throw new Error("Failed to load components");
@@ -46,9 +45,7 @@ function ComponentsPage() {
       } catch (error) {
         console.error("Component fetch error:", error);
 
-        setError(
-          "FrontForge couldn't load the component library."
-        );
+        setError("FrontForge couldn't load the component library.");
       } finally {
         setIsLoading(false);
       }
@@ -63,7 +60,7 @@ function ComponentsPage() {
         `${API_URL}/api/components/${component.slug}/favorite`,
         {
           method: "PATCH",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -74,10 +71,8 @@ function ComponentsPage() {
 
       setComponents((currentComponents) =>
         currentComponents.map((item) =>
-          item._id === result.data._id
-            ? result.data
-            : item
-        )
+          item._id === result.data._id ? result.data : item,
+        ),
       );
     } catch (error) {
       console.error("Favorite update error:", error);
@@ -88,8 +83,10 @@ function ComponentsPage() {
     return components.filter((component) => {
       const matchesCategory =
         activeCategory === "All" ||
-        component.category.toLowerCase() ===
-          activeCategory.toLowerCase();
+        component.category.toLowerCase() === activeCategory.toLowerCase();
+      const matchesDifficulty =
+        activeDifficulty === "All" ||
+        component.difficulty?.toLowerCase() === activeDifficulty.toLowerCase();
 
       const query = search.trim().toLowerCase();
 
@@ -97,13 +94,11 @@ function ComponentsPage() {
         !query ||
         component.name.toLowerCase().includes(query) ||
         component.description.toLowerCase().includes(query) ||
-        component.tags?.some((tag) =>
-          tag.toLowerCase().includes(query)
-        );
+        component.tags?.some((tag) => tag.toLowerCase().includes(query));
 
-      return matchesCategory && matchesSearch;
+      return matchesCategory && matchesSearch && matchesDifficulty;
     });
-  }, [components, search, activeCategory]);
+  }, [components, search, activeCategory, activeDifficulty]);
 
   return (
     <section>
@@ -119,8 +114,8 @@ function ComponentsPage() {
             </h1>
 
             <p className="mt-4 max-w-xl text-[15px] leading-7 text-forge-muted">
-              A growing library of reusable interface patterns,
-              implementation notes and frontend references.
+              A growing library of reusable interface patterns, implementation
+              notes and frontend references.
             </p>
           </div>
 
@@ -131,9 +126,7 @@ function ComponentsPage() {
               </span>
 
               <p className="mt-1 font-display text-3xl font-semibold tracking-[-0.05em]">
-                {components.length
-                  .toString()
-                  .padStart(2, "0")}
+                {components.length.toString().padStart(2, "0")}
               </p>
             </div>
           </div>
@@ -151,9 +144,7 @@ function ComponentsPage() {
             <input
               type="search"
               value={search}
-              onChange={(event) =>
-                setSearch(event.target.value)
-              }
+              onChange={(event) => setSearch(event.target.value)}
               placeholder="Search components..."
               className="w-full rounded-forge-md border border-forge-border bg-forge-surface py-2.5 pl-10 pr-4 text-sm text-forge-text outline-none transition placeholder:text-forge-subtle focus:border-forge-accent"
             />
@@ -169,9 +160,7 @@ function ComponentsPage() {
               <button
                 key={category}
                 type="button"
-                onClick={() =>
-                  setActiveCategory(category)
-                }
+                onClick={() => setActiveCategory(category)}
                 className={[
                   "shrink-0 rounded-forge-sm border px-3 py-2 text-xs font-medium transition",
                   activeCategory === category
@@ -180,6 +169,29 @@ function ComponentsPage() {
                 ].join(" ")}
               >
                 {category}
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <span className="mr-2 font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle">
+                    Difficulty
+                  </span>
+
+                  {["All", "Beginner", "Intermediate", "Advanced"].map(
+                    (difficulty) => (
+                      <button
+                        key={difficulty}
+                        type="button"
+                        onClick={() => setActiveDifficulty(difficulty)}
+                        className={[
+                          "rounded-forge-sm border px-3 py-2 text-xs font-medium transition",
+                          activeDifficulty === difficulty
+                            ? "border-forge-accent bg-forge-accent-soft text-forge-accent"
+                            : "border-forge-border bg-forge-surface text-forge-muted hover:text-forge-text",
+                        ].join(" ")}
+                      >
+                        {difficulty}
+                      </button>
+                    ),
+                  )}
+                </div>
               </button>
             ))}
           </div>
@@ -227,11 +239,7 @@ function ComponentsPage() {
   );
 }
 
-function LibraryMessage({
-  eyebrow,
-  title,
-  description,
-}) {
+function LibraryMessage({ eyebrow, title, description }) {
   return (
     <div className="flex min-h-[360px] items-center justify-center rounded-forge-lg border border-dashed border-forge-border bg-forge-surface/30 px-6 text-center">
       <div className="max-w-md">
@@ -243,9 +251,7 @@ function LibraryMessage({
           {title}
         </h2>
 
-        <p className="mt-3 text-sm leading-6 text-forge-muted">
-          {description}
-        </p>
+        <p className="mt-3 text-sm leading-6 text-forge-muted">{description}</p>
       </div>
     </div>
   );

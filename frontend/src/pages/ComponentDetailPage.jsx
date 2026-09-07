@@ -1,17 +1,7 @@
-import {
-  ArrowLeft,
-  Copy,
-  ExternalLink,
-  Heart,
-  Trash2,
-} from "lucide-react";
+import { ArrowLeft, Copy, ExternalLink, Heart, Trash2 } from "lucide-react";
 
 import { useEffect, useState } from "react";
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import PreviewRenderer from "../previews/PreviewRenderer";
 import ResponsivePreviewFrame from "../previews/ResponsivePreviewFrame";
@@ -34,9 +24,7 @@ function ComponentDetailPage() {
 
         const API_URL = import.meta.env.VITE_API_URL || "";
 
-        const response = await fetch(
-          `${API_URL}/api/components/${slug}`
-        );
+        const response = await fetch(`${API_URL}/api/components/${slug}`);
 
         if (!response.ok) {
           throw new Error("Failed to load component");
@@ -46,14 +34,9 @@ function ComponentDetailPage() {
 
         setComponent(result.data);
       } catch (error) {
-        console.error(
-          "Component detail fetch error:",
-          error
-        );
+        console.error("Component detail fetch error:", error);
 
-        setError(
-          "FrontForge couldn't load this component."
-        );
+        setError("FrontForge couldn't load this component.");
       } finally {
         setIsLoading(false);
       }
@@ -68,7 +51,7 @@ function ComponentDetailPage() {
     }
 
     const confirmed = window.confirm(
-      `Delete "${component.name}"?\n\nThis action cannot be undone.`
+      `Delete "${component.name}"?\n\nThis action cannot be undone.`,
     );
 
     if (!confirmed) {
@@ -78,14 +61,13 @@ function ComponentDetailPage() {
     try {
       setIsDeleting(true);
 
-      const API_URL =
-        import.meta.env.VITE_API_URL || "";
+      const API_URL = import.meta.env.VITE_API_URL || "";
 
       const response = await fetch(
         `${API_URL}/api/components/${component.slug}`,
         {
           method: "DELETE",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -94,14 +76,9 @@ function ComponentDetailPage() {
 
       navigate("/components");
     } catch (error) {
-      console.error(
-        "Component delete error:",
-        error
-      );
+      console.error("Component delete error:", error);
 
-      window.alert(
-        "FrontForge couldn't delete this component."
-      );
+      window.alert("FrontForge couldn't delete this component.");
     } finally {
       setIsDeleting(false);
     }
@@ -127,13 +104,7 @@ function ComponentDetailPage() {
     );
   }
 
-  const tabs = [
-    "preview",
-    "code",
-    "notes",
-    "reference",
-    "implementation",
-  ];
+  const tabs = ["preview", "code", "notes", "reference", "implementation"];
 
   return (
     <section>
@@ -153,17 +124,13 @@ function ComponentDetailPage() {
                 Level {component.level}
               </span>
 
-              <span className="text-forge-subtle">
-                /
-              </span>
+              <span className="text-forge-subtle">/</span>
 
               <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-muted">
                 {component.category}
               </span>
 
-              <span className="text-forge-subtle">
-                /
-              </span>
+              <span className="text-forge-subtle">/</span>
 
               <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-muted">
                 {component.difficulty}
@@ -231,35 +198,23 @@ function ComponentDetailPage() {
             >
               <Trash2 size={15} />
 
-              {isDeleting
-                ? "Deleting..."
-                : "Delete"}
+              {isDeleting ? "Deleting..." : "Delete"}
             </button>
           </div>
         </div>
       </div>
 
       <div className="py-8">
-        {activeTab === "preview" && (
-          <PreviewTab component={component} />
-        )}
+        {activeTab === "preview" && <PreviewTab component={component} />}
 
-        {activeTab === "code" && (
-          <CodeTab component={component} />
-        )}
+        {activeTab === "code" && <CodeTab component={component} />}
 
-        {activeTab === "notes" && (
-          <NotesTab component={component} />
-        )}
+        {activeTab === "notes" && <NotesTab component={component} />}
 
-        {activeTab === "reference" && (
-          <ReferenceTab component={component} />
-        )}
+        {activeTab === "reference" && <ReferenceTab component={component} />}
 
         {activeTab === "implementation" && (
-          <ImplementationTab
-            component={component}
-          />
+          <ImplementationTab component={component} />
         )}
       </div>
     </section>
@@ -274,9 +229,7 @@ function PreviewTab({ component }) {
           Live preview
         </span>
 
-        <p className="mt-1 text-sm text-forge-text">
-          {component.name}
-        </p>
+        <p className="mt-1 text-sm text-forge-text">{component.name}</p>
       </div>
 
       <ResponsivePreviewFrame>
@@ -288,9 +241,7 @@ function PreviewTab({ component }) {
 
 function CodeTab({ component }) {
   const hasCode =
-    component.code?.jsx ||
-    component.code?.css ||
-    component.code?.javascript;
+    component.code?.jsx || component.code?.css || component.code?.javascript;
 
   if (!hasCode) {
     return (
@@ -304,24 +255,15 @@ function CodeTab({ component }) {
   return (
     <div className="space-y-5">
       {component.code?.jsx && (
-        <CodeBlock
-          title="React / JSX"
-          code={component.code.jsx}
-        />
+        <CodeBlock title="React / JSX" code={component.code.jsx} />
       )}
 
       {component.code?.css && (
-        <CodeBlock
-          title="CSS"
-          code={component.code.css}
-        />
+        <CodeBlock title="CSS" code={component.code.css} />
       )}
 
       {component.code?.javascript && (
-        <CodeBlock
-          title="JavaScript"
-          code={component.code.javascript}
-        />
+        <CodeBlock title="JavaScript" code={component.code.javascript} />
       )}
     </div>
   );
@@ -366,19 +308,13 @@ function NotesTab({ component }) {
     ["Why it works", component.notes?.whyItWorks],
     ["When to use", component.notes?.whenToUse],
     ["When not to use", component.notes?.whenNotToUse],
-    [
-      "Responsive behavior",
-      component.notes?.responsiveBehavior,
-    ],
+    ["Responsive behavior", component.notes?.responsiveBehavior],
   ];
 
   return (
     <div className="grid gap-px overflow-hidden rounded-forge-lg border border-forge-border bg-forge-border md:grid-cols-2">
       {notes.map(([title, value]) => (
-        <article
-          key={title}
-          className="min-h-[180px] bg-forge-surface p-6"
-        >
+        <article key={title} className="min-h-[180px] bg-forge-surface p-6">
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-accent">
             {title}
           </span>
@@ -394,8 +330,7 @@ function NotesTab({ component }) {
 
 function ReferenceTab({ component }) {
   const hasReference =
-    component.reference?.websiteName ||
-    component.reference?.url;
+    component.reference?.websiteName || component.reference?.url;
 
   if (!hasReference) {
     return (
@@ -413,8 +348,7 @@ function ReferenceTab({ component }) {
       </span>
 
       <h2 className="mt-4 font-display text-2xl font-semibold tracking-[-0.04em]">
-        {component.reference.websiteName ||
-          "External reference"}
+        {component.reference.websiteName || "External reference"}
       </h2>
 
       {component.reference.url && (
@@ -445,9 +379,8 @@ function ImplementationTab({ component }) {
         </h2>
 
         <p className="mt-4 text-sm leading-7 text-forge-muted">
-          Study the hierarchy, spacing, responsive
-          behavior and composition before recreating
-          this pattern in your own visual language.
+          Study the hierarchy, spacing, responsive behavior and composition
+          before recreating this pattern in your own visual language.
         </p>
       </article>
 
@@ -461,18 +394,15 @@ function ImplementationTab({ component }) {
         </h2>
 
         <p className="mt-4 text-sm leading-7 text-forge-muted">
-          Focus on understanding the layout before
-          introducing unnecessary complexity.
+          Focus on understanding the layout before introducing unnecessary
+          complexity.
         </p>
       </article>
     </div>
   );
 }
 
-function EmptySection({
-  title,
-  description,
-}) {
+function EmptySection({ title, description }) {
   return (
     <div className="flex min-h-[320px] items-center justify-center rounded-forge-lg border border-dashed border-forge-border bg-forge-surface/30 px-6 text-center">
       <div className="max-w-md">
@@ -480,19 +410,13 @@ function EmptySection({
           {title}
         </h2>
 
-        <p className="mt-3 text-sm leading-6 text-forge-muted">
-          {description}
-        </p>
+        <p className="mt-3 text-sm leading-6 text-forge-muted">{description}</p>
       </div>
     </div>
   );
 }
 
-function StateMessage({
-  eyebrow,
-  title,
-  description,
-}) {
+function StateMessage({ eyebrow, title, description }) {
   return (
     <div className="flex min-h-[70vh] items-center justify-center text-center">
       <div>
@@ -504,9 +428,7 @@ function StateMessage({
           {title}
         </h1>
 
-        <p className="mt-3 text-sm text-forge-muted">
-          {description}
-        </p>
+        <p className="mt-3 text-sm text-forge-muted">{description}</p>
       </div>
     </div>
   );
