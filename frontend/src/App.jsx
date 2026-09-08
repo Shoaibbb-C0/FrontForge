@@ -11,6 +11,7 @@ import ProjectsPage from "./pages/ProjectsPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import ComponentDetailPage from "./pages/ComponentDetailPage";
 import AddComponentPage from "./pages/AddComponentPage";
+import EditComponentPage from "./pages/EditComponentPage";
 function App() {
   return (
     <Routes>
@@ -18,6 +19,7 @@ function App() {
         <Route index element={<DashboardPage />} />
         <Route path="/components" element={<ComponentsPage />} />
         <Route path="/components/new" element={<AddComponentPage />} />
+        <Route path="/components/:slug/edit" element={<EditComponentPage />} />
         <Route path="/components/:slug" element={<ComponentDetailPage />} />
         <Route path="/animations" element={<AnimationsPage />} />
         <Route path="/references" element={<ReferencesPage />} />
