@@ -10,12 +10,14 @@ import NotesPage from "./pages/NotesPage";
 import ProjectsPage from "./pages/ProjectsPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import ComponentDetailPage from "./pages/ComponentDetailPage";
+import AddComponentPage from "./pages/AddComponentPage";
 function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="/components" element={<ComponentsPage />} />
+        <Route path="/components/new" element={<AddComponentPage />} />
         <Route path="/components/:slug" element={<ComponentDetailPage />} />
         <Route path="/animations" element={<AnimationsPage />} />
         <Route path="/references" element={<ReferencesPage />} />
