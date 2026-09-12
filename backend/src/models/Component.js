@@ -107,6 +107,33 @@ const componentSchema = new mongoose.Schema(
         default: "",
       },
     },
+    preview: {
+      // Keep legacy records without metadata distinguishable from explicit none.
+      type: new mongoose.Schema({
+        type: {
+          type: String,
+          enum: ["none", "html", "registered"],
+          default: "none",
+        },
+
+        registryKey: {
+          type: String,
+          default: "",
+          trim: true,
+        },
+
+        html: {
+          type: String,
+          default: "",
+        },
+
+        css: {
+          type: String,
+          default: "",
+        },
+      }, { _id: false }),
+      default: undefined,
+    },
 
     reference: {
       websiteName: {
@@ -133,7 +160,7 @@ const componentSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Component = mongoose.model("Component", componentSchema);

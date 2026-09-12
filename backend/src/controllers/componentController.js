@@ -51,6 +51,7 @@ export const createComponent = async (req, res, next) => {
       code,
       notes,
       reference,
+      preview,
       status,
     } = req.body;
 
@@ -64,6 +65,7 @@ export const createComponent = async (req, res, next) => {
     const component = await Component.create({
       name,
       slug,
+      preview: preview ?? {},
       description,
       level,
       category,

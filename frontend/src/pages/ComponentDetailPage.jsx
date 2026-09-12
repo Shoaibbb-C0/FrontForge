@@ -289,7 +289,7 @@ function PreviewTab({ component }) {
       </div>
 
       <ResponsivePreviewFrame>
-        <PreviewRenderer slug={component.slug} />
+        <PreviewRenderer component={component} />
       </ResponsivePreviewFrame>
     </div>
   );
