@@ -19,6 +19,10 @@ function AddComponentPage() {
     jsx: "",
     css: "",
     javascript: "",
+    previewType: "none",
+    previewRegistryKey: "",
+    previewHtml: "",
+    previewCss: "",
     whatItIs: "",
     whyItWorks: "",
     whenToUse: "",
@@ -75,6 +79,13 @@ function AddComponentPage() {
           jsx: formData.jsx,
           css: formData.css,
           javascript: formData.javascript,
+        },
+
+        preview: {
+          type: formData.previewType,
+          registryKey: formData.previewRegistryKey.trim(),
+          html: formData.previewHtml,
+          css: formData.previewCss,
         },
 
         notes: {
@@ -268,6 +279,49 @@ function AddComponentPage() {
             onChange={handleChange}
             rows={8}
           />
+        </FormSection>
+
+        <FormSection title="Preview">
+          <Select
+            label="Preview type"
+            name="previewType"
+            value={formData.previewType}
+            onChange={handleChange}
+            options={[
+              { value: "none", label: "No preview" },
+              { value: "html", label: "Automatic HTML / CSS" },
+              { value: "registered", label: "Registered React preview" },
+            ]}
+          />
+
+          {formData.previewType === "html" && (
+            <>
+              <TextArea
+                label="Preview HTML"
+                name="previewHtml"
+                value={formData.previewHtml}
+                onChange={handleChange}
+                rows={12}
+              />
+              <TextArea
+                label="Preview CSS"
+                name="previewCss"
+                value={formData.previewCss}
+                onChange={handleChange}
+                rows={10}
+              />
+            </>
+          )}
+
+          {formData.previewType === "registered" && (
+            <Field
+              label="Registry key"
+              name="previewRegistryKey"
+              value={formData.previewRegistryKey}
+              onChange={handleChange}
+              placeholder="editorial-split-hero"
+            />
+          )}
         </FormSection>
 
         <FormSection title="Learning notes">

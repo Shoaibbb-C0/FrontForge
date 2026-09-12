@@ -169,32 +169,32 @@ function ComponentsPage() {
                 ].join(" ")}
               >
                 {category}
-                <div className="mt-4 flex flex-wrap items-center gap-2">
-                  <span className="mr-2 font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle">
-                    Difficulty
-                  </span>
-
-                  {["All", "Beginner", "Intermediate", "Advanced"].map(
-                    (difficulty) => (
-                      <button
-                        key={difficulty}
-                        type="button"
-                        onClick={() => setActiveDifficulty(difficulty)}
-                        className={[
-                          "rounded-forge-sm border px-3 py-2 text-xs font-medium transition",
-                          activeDifficulty === difficulty
-                            ? "border-forge-accent bg-forge-accent-soft text-forge-accent"
-                            : "border-forge-border bg-forge-surface text-forge-muted hover:text-forge-text",
-                        ].join(" ")}
-                      >
-                        {difficulty}
-                      </button>
-                    ),
-                  )}
-                </div>
               </button>
             ))}
           </div>
+        </div>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="mr-2 font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle">
+            Difficulty
+          </span>
+
+          {["All", "Beginner", "Intermediate", "Advanced"].map(
+            (difficulty) => (
+              <button
+                key={difficulty}
+                type="button"
+                onClick={() => setActiveDifficulty(difficulty)}
+                className={[
+                  "rounded-forge-sm border px-3 py-2 text-xs font-medium transition",
+                  activeDifficulty === difficulty
+                    ? "border-forge-accent bg-forge-accent-soft text-forge-accent"
+                    : "border-forge-border bg-forge-surface text-forge-muted hover:text-forge-text",
+                ].join(" ")}
+              >
+                {difficulty}
+              </button>
+            ),
+          )}
         </div>
       </div>
 

@@ -1,4 +1,5 @@
-    import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import previewRegistry from "../previews/previewRegistry";
 import {
   useNavigate,
   useParams,
@@ -23,6 +24,10 @@ function EditComponentPage() {
     jsx: "",
     css: "",
     javascript: "",
+    previewType: "none",
+    previewRegistryKey: "",
+    previewHtml: "",
+    previewCss: "",
     whatItIs: "",
     whyItWorks: "",
     whenToUse: "",
@@ -69,6 +74,13 @@ function EditComponentPage() {
           jsx: component.code?.jsx ?? "",
           css: component.code?.css ?? "",
           javascript: component.code?.javascript ?? "",
+
+          previewType: component.preview?.type ?? (
+            Object.hasOwn(previewRegistry, component.slug) ? "registered" : "none"
+          ),
+          previewRegistryKey: component.preview?.registryKey ?? "",
+          previewHtml: component.preview?.html ?? "",
+          previewCss: component.preview?.css ?? "",
 
           whatItIs: component.notes?.whatItIs ?? "",
           whyItWorks: component.notes?.whyItWorks ?? "",
@@ -141,6 +153,13 @@ function EditComponentPage() {
           jsx: formData.jsx,
           css: formData.css,
           javascript: formData.javascript,
+        },
+
+        preview: {
+          type: formData.previewType,
+          registryKey: formData.previewRegistryKey.trim(),
+          html: formData.previewHtml,
+          css: formData.previewCss,
         },
 
         notes: {
@@ -340,6 +359,49 @@ function EditComponentPage() {
           />
         </FormSection>
 
+        <FormSection title="Preview">
+          <Select
+            label="Preview type"
+            name="previewType"
+            value={formData.previewType}
+            onChange={handleChange}
+            options={[
+              { value: "none", label: "No preview" },
+              { value: "html", label: "Automatic HTML / CSS" },
+              { value: "registered", label: "Registered React preview" },
+            ]}
+          />
+
+          {formData.previewType === "html" && (
+            <>
+              <TextArea
+                label="Preview HTML"
+                name="previewHtml"
+                value={formData.previewHtml}
+                onChange={handleChange}
+                rows={12}
+              />
+              <TextArea
+                label="Preview CSS"
+                name="previewCss"
+                value={formData.previewCss}
+                onChange={handleChange}
+                rows={10}
+              />
+            </>
+          )}
+
+          {formData.previewType === "registered" && (
+            <Field
+              label="Registry key"
+              name="previewRegistryKey"
+              value={formData.previewRegistryKey}
+              onChange={handleChange}
+              placeholder="editorial-split-hero"
+            />
+          )}
+        </FormSection>
+
         <FormSection title="Learning notes">
           <TextArea
             label="What it is"
@@ -427,6 +489,7 @@ function Field({
   value,
   onChange,
   required = false,
+  placeholder = "",
 }) {
   return (
     <label className="block">
@@ -440,6 +503,7 @@ function Field({
         value={value}
         onChange={onChange}
         required={required}
+        placeholder={placeholder}
         className="w-full rounded-forge-md border border-forge-border bg-forge-bg px-4 py-3 text-sm text-forge-text outline-none transition focus:border-forge-accent"
       />
     </label>
