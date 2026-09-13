@@ -5,11 +5,9 @@ import cors from "cors";
 
 import connectDB from "./config/db.js";
 import componentRoutes from "./routes/componentRoutes.js";
+import animationRoutes from "./routes/animationRoutes.js";
 
-import {
-  notFound,
-  errorHandler,
-} from "./middleware/errorMiddleware.js";
+import { notFound, errorHandler, } from "./middleware/errorMiddleware.js";
 
 const app = express();
 
@@ -26,6 +24,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/components", componentRoutes);
+app.use("/api/animations", animationRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

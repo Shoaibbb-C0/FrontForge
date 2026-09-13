@@ -12,6 +12,7 @@ import FavoritesPage from "./pages/FavoritesPage";
 import ComponentDetailPage from "./pages/ComponentDetailPage";
 import AddComponentPage from "./pages/AddComponentPage";
 import EditComponentPage from "./pages/EditComponentPage";
+import AnimationDetailPage from "./pages/AnimatioDetailPage";
 function App() {
   return (
     <Routes>
@@ -22,6 +23,7 @@ function App() {
         <Route path="/components/:slug/edit" element={<EditComponentPage />} />
         <Route path="/components/:slug" element={<ComponentDetailPage />} />
         <Route path="/animations" element={<AnimationsPage />} />
+        <Route path="/animations/:slug" element={<AnimationDetailPage />} />
         <Route path="/references" element={<ReferencesPage />} />
         <Route path="/notes" element={<NotesPage />} />
         <Route path="/projects" element={<ProjectsPage />} />

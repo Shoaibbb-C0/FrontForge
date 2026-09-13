@@ -1,0 +1,114 @@
+import Animation from "../models/Animation.js";
+
+export const getAnimations = async (req, res, next) => {
+  try {
+    const animations = await Animation.find().sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json({
+      success: true,
+      count: animations.length,
+      data: animations,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAnimationBySlug = async (req, res, next) => {
+  try {
+    const animation = await Animation.findOne({
+      slug: req.params.slug,
+    });
+
+    if (!animation) {
+      res.status(404);
+      throw new Error("Animation not found");
+    }
+
+    res.status(200).json({
+      success: true,
+      data: animation,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createAnimation = async (req, res, next) => {
+  try {
+    const {
+      name,
+      slug,
+      description,
+      level,
+      library,
+      trigger,
+      category,
+      difficulty,
+      tags,
+      code,
+      notes,
+      preview,
+      status,
+    } = req.body;
+
+    const existingAnimation = await Animation.findOne({ slug });
+
+    if (existingAnimation) {
+      res.status(409);
+
+      throw new Error("An animation with this slug already exists");
+    }
+
+    const animation = await Animation.create({
+      name,
+      slug,
+      description,
+      level,
+      library,
+      trigger,
+      category,
+      difficulty,
+      tags,
+      code,
+      notes,
+      preview,
+      status,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: animation,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const updateAnimation = async (req, res, next) => {
+  try {
+    const animation = await Animation.findOneAndUpdate(
+      {
+        slug: req.params.slug,
+      },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!animation) {
+      res.status(404);
+      throw new Error("Animation not found");
+    }
+
+    res.status(200).json({
+      success: true,
+      data: animation,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
