@@ -1,16 +1,24 @@
-import { ArrowLeft, Copy } from "lucide-react";
+import { ArrowLeft, Copy, Heart, Pencil, Trash2 } from "lucide-react";
+
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+
 import AnimationPreviewRenderer from "../animation-previews/AnimationPreviewRenderer";
 import ResponsivePreviewFrame from "../previews/ResponsivePreviewFrame";
 
 function AnimationDetailPage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
 
   const [animation, setAnimation] = useState(null);
   const [activeTab, setActiveTab] = useState("preview");
 
   const [isLoading, setIsLoading] = useState(true);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [isUpdatingFavorite, setIsUpdatingFavorite] = useState(false);
+
   const [error, setError] = useState("");
 
   const API_URL = import.meta.env.VITE_API_URL || "";
@@ -41,6 +49,74 @@ function AnimationDetailPage() {
 
     fetchAnimation();
   }, [API_URL, slug]);
+
+  const handleFavoriteToggle = async () => {
+    if (!animation || isUpdatingFavorite) {
+      return;
+    }
+
+    try {
+      setIsUpdatingFavorite(true);
+
+      const response = await fetch(
+        `${API_URL}/api/animations/${animation.slug}/favorite`,
+        {
+          method: "PATCH",
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update favorite");
+      }
+
+      const result = await response.json();
+
+      setAnimation(result.data);
+    } catch (error) {
+      console.error("Animation favorite update error:", error);
+
+      window.alert("FrontForge couldn't update this favorite.");
+    } finally {
+      setIsUpdatingFavorite(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!animation || isDeleting) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Delete "${animation.name}"?\n\nThis action cannot be undone.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+
+      const response = await fetch(
+        `${API_URL}/api/animations/${animation.slug}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete animation");
+      }
+
+      navigate("/animations");
+    } catch (error) {
+      console.error("Animation delete error:", error);
+
+      window.alert("FrontForge couldn't delete this animation.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -120,54 +196,93 @@ function AnimationDetailPage() {
       </header>
 
       <div className="sticky top-0 z-10 border-b border-forge-border bg-forge-bg/95 py-3 backdrop-blur">
-        <div className="flex gap-1 overflow-x-auto">
-          {tabs.map((tab) => (
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex gap-1 overflow-x-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={[
+                  "shrink-0 rounded-forge-sm px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition",
+                  activeTab === tab
+                    ? "bg-forge-surface-soft text-forge-text"
+                    : "text-forge-muted hover:text-forge-text",
+                ].join(" ")}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
             <button
-              key={tab}
               type="button"
-              onClick={() => setActiveTab(tab)}
+              aria-label={
+                animation.isFavorite
+                  ? `Remove ${animation.name} from favorites`
+                  : `Add ${animation.name} to favorites`
+              }
+              onClick={handleFavoriteToggle}
+              disabled={isUpdatingFavorite}
               className={[
-                "shrink-0 rounded-forge-sm px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition",
-                activeTab === tab
-                  ? "bg-forge-surface-soft text-forge-text"
+                "transition disabled:cursor-not-allowed disabled:opacity-50",
+                animation.isFavorite
+                  ? "text-forge-accent"
                   : "text-forge-muted hover:text-forge-text",
               ].join(" ")}
             >
-              {tab}
+              <Heart
+                size={18}
+                fill={animation.isFavorite ? "currentColor" : "none"}
+              />
             </button>
-          ))}
+
+            <Link
+              to={`/animations/${animation.slug}/edit`}
+              className="flex items-center gap-2 rounded-forge-sm px-3 py-2 text-xs text-forge-muted transition hover:bg-forge-surface-soft hover:text-forge-text"
+            >
+              <Pencil size={15} />
+              Edit
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="flex items-center gap-2 rounded-forge-sm px-3 py-2 text-xs text-forge-muted transition hover:bg-forge-danger/10 hover:text-forge-danger disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Trash2 size={15} />
+
+              {isDeleting ? "Deleting..." : "Delete"}
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="py-8">
-  {activeTab === "preview" && (
-    <PreviewTab animation={animation} />
-  )}
+        {activeTab === "preview" && <PreviewTab animation={animation} />}
 
-  {activeTab === "code" && (
-    <CodeTab animation={animation} />
-  )}
+        {activeTab === "code" && <CodeTab animation={animation} />}
 
-  {activeTab === "notes" && (
-    <NotesTab animation={animation} />
-  )}
+        {activeTab === "notes" && <NotesTab animation={animation} />}
 
-  {activeTab === "performance" && (
-    <TextPanel
-      eyebrow="Performance"
-      title="Performance notes"
-      text={animation.notes?.performanceNotes}
-    />
-  )}
+        {activeTab === "performance" && (
+          <TextPanel
+            eyebrow="Performance"
+            title="Performance notes"
+            text={animation.notes?.performanceNotes}
+          />
+        )}
 
-  {activeTab === "accessibility" && (
-    <TextPanel
-      eyebrow="Accessibility"
-      title="Accessibility notes"
-      text={animation.notes?.accessibilityNotes}
-    />
-  )}
-</div>
+        {activeTab === "accessibility" && (
+          <TextPanel
+            eyebrow="Accessibility"
+            title="Accessibility notes"
+            text={animation.notes?.accessibilityNotes}
+          />
+        )}
+      </div>
     </section>
   );
 }

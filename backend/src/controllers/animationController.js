@@ -112,3 +112,53 @@ export const updateAnimation = async (req, res, next) => {
     next(error);
   }
 };
+
+export const toggleAnimationFavorite = async (req, res, next) => {
+  try {
+    const animation = await Animation.findOne({
+      slug: req.params.slug,
+    });
+
+    if (!animation) {
+      res.status(404);
+      throw new Error("Animation not found");
+    }
+
+    animation.isFavorite = !animation.isFavorite;
+
+    await animation.save();
+
+    res.status(200).json({
+      success: true,
+      data: animation,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteAnimation = async (req, res, next) => {
+  try {
+    const animation = await Animation.findOne({
+      slug: req.params.slug,
+    });
+
+    if (!animation) {
+      res.status(404);
+      throw new Error("Animation not found");
+    }
+
+    await animation.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Animation deleted successfully",
+      data: {
+        id: animation._id,
+        slug: animation.slug,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
