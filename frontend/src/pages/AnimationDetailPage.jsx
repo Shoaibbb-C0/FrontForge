@@ -288,18 +288,39 @@ function AnimationDetailPage() {
 }
 
 function PreviewTab({ animation }) {
+  const [previewKey, setPreviewKey] = useState(0);
+
+  const handleReplay = () => {
+    setPreviewKey((current) => current + 1);
+  };
+
   return (
     <div>
-      <div className="mb-4">
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-muted">
-          Live animation
-        </span>
+      <div className="mb-4 flex items-end justify-between gap-4">
+        <div>
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-muted">
+            Live animation
+          </span>
 
-        <p className="mt-1 text-sm text-forge-text">{animation.name}</p>
+          <p className="mt-1 text-sm text-forge-text">
+            {animation.name}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleReplay}
+          className="rounded-forge-sm border border-forge-border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-forge-muted transition hover:border-forge-accent hover:text-forge-text"
+        >
+          Replay
+        </button>
       </div>
 
       <ResponsivePreviewFrame>
-        <AnimationPreviewRenderer animation={animation} />
+        <AnimationPreviewRenderer
+          key={previewKey}
+          animation={animation}
+        />
       </ResponsivePreviewFrame>
     </div>
   );

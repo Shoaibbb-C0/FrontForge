@@ -1,5 +1,18 @@
 import HtmlPreview from "../previews/HtmlPreview";
 
+const reducedMotionCss = `
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+`;
+
 function AnimationPreviewRenderer({ animation }) {
   const preview = animation?.preview;
 
@@ -12,10 +25,15 @@ function AnimationPreviewRenderer({ animation }) {
       return <PreviewFallback />;
     }
 
+    const previewCss = `
+      ${preview.css || ""}
+      ${reducedMotionCss}
+    `;
+
     return (
       <HtmlPreview
         html={preview.html}
-        css={preview.css}
+        css={previewCss}
       />
     );
   }
@@ -38,7 +56,7 @@ function PreviewFallback() {
         <p className="mt-3 text-sm leading-6 text-forge-muted">
           Configure a preview for this animation to see
           the motion running here.
-        </p>
+        </p>    
       </div>
     </div>
   );
