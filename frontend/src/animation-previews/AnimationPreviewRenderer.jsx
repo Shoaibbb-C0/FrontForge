@@ -12,12 +12,27 @@ const reducedMotionCss = `
   }
 }
 `;
+import animationPreviewRegistry from "./animationPreviewRegistry";
+
+const GSAP_CDN =
+  "https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js";
 
 function AnimationPreviewRenderer({ animation }) {
   const preview = animation?.preview;
 
   if (!preview || preview.type === "none") {
     return <PreviewFallback />;
+  }
+
+  if (preview.type === "registered") {
+    const RegisteredPreview =
+      animationPreviewRegistry[preview.registryKey];
+
+    if (!RegisteredPreview) {
+      return <PreviewFallback />;
+    }
+
+    return <RegisteredPreview />;
   }
 
   if (preview.type === "html") {
@@ -30,10 +45,32 @@ function AnimationPreviewRenderer({ animation }) {
       ${reducedMotionCss}
     `;
 
+    const isGsap =
+      animation.library?.toLowerCase() === "gsap";
+
+    const externalScripts = isGsap
+      ? [GSAP_CDN]
+      : [];
+
+    const javascript = isGsap
+      ? `
+      const prefersReducedMotion =
+        window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+
+      if (!prefersReducedMotion) {
+        ${animation.code?.javascript || ""}
+      }
+    `
+      : "";
+
     return (
       <HtmlPreview
         html={preview.html}
         css={previewCss}
+        javascript={javascript}
+        externalScripts={externalScripts}
       />
     );
   }
@@ -56,7 +93,7 @@ function PreviewFallback() {
         <p className="mt-3 text-sm leading-6 text-forge-muted">
           Configure a preview for this animation to see
           the motion running here.
-        </p>    
+        </p>
       </div>
     </div>
   );

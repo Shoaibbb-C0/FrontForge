@@ -1,4 +1,16 @@
-function HtmlPreview({ html = "", css = "" }) {
+function HtmlPreview({
+  html = "",
+  css = "",
+  javascript = "",
+  externalScripts = [],
+}) {
+  const scriptTags = externalScripts
+    .map(
+      (src) =>
+        `<script src="${src}"></script>`,
+    )
+    .join("\n");
+
   const document = `
     <!doctype html>
     <html lang="en">
@@ -36,15 +48,41 @@ function HtmlPreview({ html = "", css = "" }) {
 
       <body>
         ${html}
+
+        ${scriptTags}
+
+        ${javascript
+      ? `
+              <script>
+                try {
+                  ${javascript}
+                } catch (error) {
+                  console.error(
+                    "FrontForge preview error:",
+                    error
+                  );
+                }
+              </script>
+            `
+      : ""
+    }
       </body>
     </html>
   `;
+
+  const hasJavaScript =
+    javascript.trim() ||
+    externalScripts.length > 0;
 
   return (
     <iframe
       title="FrontForge component preview"
       srcDoc={document}
-      sandbox=""
+      sandbox={
+        hasJavaScript
+          ? "allow-scripts"
+          : ""
+      }
       className="block min-h-[520px] w-full border-0 bg-white"
     />
   );
