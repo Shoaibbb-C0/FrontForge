@@ -1,6 +1,9 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import {
+  Link,
+  useSearchParams,
+} from "react-router-dom";
 
 const libraries = ["All", "CSS", "GSAP", "Framer Motion", "JavaScript"];
 
@@ -14,16 +17,39 @@ const triggers = [
   "Continuous",
 ];
 
+const difficulties = [
+  "All",
+  "Beginner",
+  "Intermediate",
+  "Advanced",
+];
+
 function AnimationsPage() {
   const [animations, setAnimations] = useState([]);
-  const [search, setSearch] = useState("");
 
-  const [activeLibrary, setActiveLibrary] = useState("All");
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [activeTrigger, setActiveTrigger] = useState("All");
+  const [search, setSearch] = useState(
+    () => searchParams.get("search") || "",
+  );
+
+  const [activeLibrary, setActiveLibrary] = useState(
+    () => searchParams.get("library") || "All",
+  );
+
+  const [activeTrigger, setActiveTrigger] = useState(
+    () => searchParams.get("trigger") || "All",
+  );
+
+  const [activeDifficulty, setActiveDifficulty] = useState(
+    () => searchParams.get("difficulty") || "All",
+  );
+
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(
+    () => searchParams.get("favorites") === "true",
+  );
 
   const [isLoading, setIsLoading] = useState(true);
-
   const [error, setError] = useState("");
 
   const API_URL = import.meta.env.VITE_API_URL || "";
@@ -55,15 +81,52 @@ function AnimationsPage() {
     fetchAnimations();
   }, [API_URL]);
 
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (search.trim()) {
+      params.set("search", search.trim());
+    }
+
+    if (activeLibrary !== "All") {
+      params.set("library", activeLibrary);
+    }
+
+    if (activeTrigger !== "All") {
+      params.set("trigger", activeTrigger);
+    }
+
+    if (activeDifficulty !== "All") {
+      params.set("difficulty", activeDifficulty);
+    }
+
+    if (showFavoritesOnly) {
+      params.set("favorites", "true");
+    }
+
+    setSearchParams(params, {
+      replace: true,
+    });
+  }, [
+    search,
+    activeLibrary,
+    activeTrigger,
+    activeDifficulty,
+    showFavoritesOnly,
+    setSearchParams,
+  ]);
+
   const filteredAnimations = useMemo(() => {
     return animations.filter((animation) => {
       const query = search.trim().toLowerCase();
 
       const matchesSearch =
         !query ||
-        animation.name.toLowerCase().includes(query) ||
-        animation.description.toLowerCase().includes(query) ||
-        animation.tags?.some((tag) => tag.toLowerCase().includes(query));
+        animation.name?.toLowerCase().includes(query) ||
+        animation.description?.toLowerCase().includes(query) ||
+        animation.tags?.some((tag) =>
+          tag.toLowerCase().includes(query),
+        );
 
       const normalizedLibrary =
         animation.library === "framer-motion"
@@ -77,15 +140,55 @@ function AnimationsPage() {
                 : animation.library;
 
       const matchesLibrary =
-        activeLibrary === "All" || normalizedLibrary === activeLibrary;
+        activeLibrary === "All" ||
+        normalizedLibrary === activeLibrary;
 
       const matchesTrigger =
         activeTrigger === "All" ||
-        animation.trigger.toLowerCase() === activeTrigger.toLowerCase();
+        animation.trigger?.toLowerCase() ===
+        activeTrigger.toLowerCase();
 
-      return matchesSearch && matchesLibrary && matchesTrigger;
+      const matchesDifficulty =
+        activeDifficulty === "All" ||
+        animation.difficulty?.toLowerCase() ===
+        activeDifficulty.toLowerCase();
+
+      const matchesFavorite =
+        !showFavoritesOnly || animation.isFavorite;
+
+      return (
+        matchesSearch &&
+        matchesLibrary &&
+        matchesTrigger &&
+        matchesDifficulty &&
+        matchesFavorite
+      );
     });
-  }, [animations, search, activeLibrary, activeTrigger]);
+  }, [
+    animations,
+    search,
+    activeLibrary,
+    activeTrigger,
+    activeDifficulty,
+    showFavoritesOnly,
+  ]);
+
+  const hasActiveFilters =
+    search.trim() !== "" ||
+    activeLibrary !== "All" ||
+    activeTrigger !== "All" ||
+    activeDifficulty !== "All" ||
+    showFavoritesOnly;
+
+  const clearFilters = () => {
+    setSearch("");
+    setActiveLibrary("All");
+    setActiveTrigger("All");
+    setActiveDifficulty("All");
+    setShowFavoritesOnly(false);
+
+    setSearchParams({}, { replace: true });
+  };
 
   return (
     <section>
@@ -101,8 +204,8 @@ function AnimationsPage() {
             </h1>
 
             <p className="mt-4 max-w-xl text-[15px] leading-7 text-forge-muted">
-              Study motion patterns, triggers, implementation techniques and the
-              reasoning behind effective interface animation.
+              Study motion patterns, triggers, implementation techniques and
+              the reasoning behind effective interface animation.
             </p>
           </div>
 
@@ -118,8 +221,8 @@ function AnimationsPage() {
         </div>
       </header>
 
-      <div className="space-y-4 border-b border-forge-border py-5">
-        <div className="relative max-w-md">
+      <div className="space-y-5 border-b border-forge-border py-5">
+        <div className="relative w-full sm:max-w-md">
           <Search
             size={16}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-forge-subtle"
@@ -147,6 +250,47 @@ function AnimationsPage() {
           activeValue={activeTrigger}
           onChange={setActiveTrigger}
         />
+
+        <FilterRow
+          label="Difficulty"
+          values={difficulties}
+          activeValue={activeDifficulty}
+          onChange={setActiveDifficulty}
+        />
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() =>
+              setShowFavoritesOnly((current) => !current)
+            }
+            className={[
+              "rounded-forge-sm border px-3 py-2 text-xs font-medium transition",
+              showFavoritesOnly
+                ? "border-forge-accent bg-forge-accent-soft text-forge-accent"
+                : "border-forge-border bg-forge-surface text-forge-muted hover:text-forge-text",
+            ].join(" ")}
+          >
+            Favorites only
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-4 border-b border-forge-border py-4">
+        <p className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle">
+          {filteredAnimations.length.toString().padStart(2, "0")}{" "}
+          {filteredAnimations.length === 1 ? "result" : "results"}
+        </p>
+
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="shrink-0 font-mono text-[10px] uppercase tracking-[0.12em] text-forge-muted transition hover:text-forge-accent"
+          >
+            Clear filters
+          </button>
+        )}
       </div>
 
       <div className="py-8">
@@ -177,7 +321,10 @@ function AnimationsPage() {
         ) : (
           <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
             {filteredAnimations.map((animation) => (
-              <AnimationCard key={animation._id} animation={animation} />
+              <AnimationCard
+                key={animation._id}
+                animation={animation}
+              />
             ))}
           </div>
         )}
@@ -186,11 +333,19 @@ function AnimationsPage() {
   );
 }
 
-function FilterRow({ label, values, activeValue, onChange }) {
+function FilterRow({
+  label,
+  values,
+  activeValue,
+  onChange,
+}) {
   return (
-    <div className="scrollbar-none flex items-center gap-2 overflow-x-auto">
+    <div className="scrollbar-none flex items-center gap-2 overflow-x-auto pb-1">
       <div className="mr-2 flex shrink-0 items-center gap-2">
-        <SlidersHorizontal size={14} className="text-forge-subtle" />
+        <SlidersHorizontal
+          size={14}
+          className="text-forge-subtle"
+        />
 
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle">
           {label}
@@ -220,60 +375,64 @@ function AnimationCard({ animation }) {
   const libraryLabel =
     animation.library === "framer-motion"
       ? "Framer Motion"
-      : animation.library.toUpperCase();
+      : animation.library?.toUpperCase();
 
   return (
-  <Link
-    to={`/animations/${animation.slug}`}
-    className="block"
-  >
-    <article className="overflow-hidden rounded-forge-lg border border-forge-border bg-forge-surface transition hover:border-forge-accent/40">
-      <div className="flex min-h-[220px] items-center justify-center border-b border-forge-border bg-forge-bg p-6">
-        <div className="flex h-full min-h-[170px] w-full items-center justify-center rounded-forge-md border border-dashed border-forge-border bg-forge-surface-soft">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle">
-            Animation Preview
-          </span>
-        </div>
-      </div>
-
-      <div className="p-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-forge-accent">
-            {libraryLabel}
-          </span>
-
-          <span className="text-forge-subtle">/</span>
-
-          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-forge-muted">
-            {animation.trigger}
-          </span>
-        </div>
-
-        <h2 className="mt-4 font-display text-xl font-semibold tracking-[-0.035em]">
-          {animation.name}
-        </h2>
-
-        <p className="mt-3 line-clamp-2 text-sm leading-6 text-forge-muted">
-          {animation.description}
-        </p>
-
-        <div className="mt-5 flex flex-wrap gap-2">
-          {animation.tags?.slice(0, 3).map((tag) => (
-            <span
-              key={tag}
-              className="rounded-full border border-forge-border px-2.5 py-1 font-mono text-[10px] text-forge-muted"
-            >
-              {tag}
+    <Link
+      to={`/animations/${animation.slug}`}
+      className="block"
+    >
+      <article className="overflow-hidden rounded-forge-lg border border-forge-border bg-forge-surface transition hover:border-forge-accent/40">
+        <div className="flex min-h-[220px] items-center justify-center border-b border-forge-border bg-forge-bg p-6">
+          <div className="flex h-full min-h-[170px] w-full items-center justify-center rounded-forge-md border border-dashed border-forge-border bg-forge-surface-soft">
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle">
+              Animation Preview
             </span>
-          ))}
+          </div>
         </div>
-      </div>
-    </article>
+
+        <div className="p-5">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-forge-accent">
+              {libraryLabel}
+            </span>
+
+            <span className="text-forge-subtle">/</span>
+
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-forge-muted">
+              {animation.trigger}
+            </span>
+          </div>
+
+          <h2 className="mt-4 font-display text-xl font-semibold tracking-[-0.035em]">
+            {animation.name}
+          </h2>
+
+          <p className="mt-3 line-clamp-2 text-sm leading-6 text-forge-muted">
+            {animation.description}
+          </p>
+
+          <div className="mt-5 flex flex-wrap gap-2">
+            {animation.tags?.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-forge-border px-2.5 py-1 font-mono text-[10px] text-forge-muted"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </article>
     </Link>
   );
 }
 
-function LibraryMessage({ eyebrow, title, description }) {
+function LibraryMessage({
+  eyebrow,
+  title,
+  description,
+}) {
   return (
     <div className="flex min-h-[360px] items-center justify-center rounded-forge-lg border border-dashed border-forge-border bg-forge-surface/30 px-6 text-center">
       <div className="max-w-md">
@@ -285,7 +444,9 @@ function LibraryMessage({ eyebrow, title, description }) {
           {title}
         </h2>
 
-        <p className="mt-3 text-sm leading-6 text-forge-muted">{description}</p>
+        <p className="mt-3 text-sm leading-6 text-forge-muted">
+          {description}
+        </p>
       </div>
     </div>
   );
