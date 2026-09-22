@@ -259,20 +259,30 @@ function AnimationsPage() {
         </div>
       </header>
 
-      <div className="space-y-5 border-b border-forge-border py-5">
-        <div className="relative w-full sm:max-w-md">
-          <Search
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-forge-subtle"
-          />
+      <div className="space-y-6 border-b border-forge-border py-7 sm:py-8">
+        <div>
+          <label
+            htmlFor="animation-search"
+            className="mb-2.5 block font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle"
+          >
+            Search library
+          </label>
 
-          <input
-            type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search animations..."
-            className="w-full rounded-forge-md border border-forge-border bg-forge-surface py-2.5 pl-10 pr-4 text-sm text-forge-text outline-none transition placeholder:text-forge-subtle focus:border-forge-accent"
-          />
+          <div className="relative w-full max-w-xl">
+            <Search
+              size={16}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-forge-subtle"
+            />
+
+            <input
+              id="animation-search"
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search animations..."
+              className="w-full rounded-forge-md border border-forge-border bg-forge-surface py-3 pl-11 pr-4 text-sm text-forge-text outline-none transition placeholder:text-forge-subtle focus:border-forge-accent"
+            />
+          </div>
         </div>
 
         <FilterRow
@@ -296,14 +306,21 @@ function AnimationsPage() {
           onChange={setActiveDifficulty}
         />
 
-        <div className="flex items-center gap-3">
+        <div className="grid gap-3 sm:grid-cols-[120px_minmax(0,1fr)] sm:items-start sm:gap-5">
+          <div className="flex min-h-9 items-center gap-2">
+            <SlidersHorizontal size={14} className="text-forge-subtle" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle">
+              Saved
+            </span>
+          </div>
+
           <button
             type="button"
             onClick={() =>
               setShowFavoritesOnly((current) => !current)
             }
             className={[
-              "rounded-forge-sm border px-3 py-2 text-xs font-medium transition",
+              "w-fit rounded-forge-sm border px-3 py-2 text-xs font-medium transition",
               showFavoritesOnly
                 ? "border-forge-accent bg-forge-accent-soft text-forge-accent"
                 : "border-forge-border bg-forge-surface text-forge-muted hover:text-forge-text",
@@ -379,8 +396,8 @@ function FilterRow({
   onChange,
 }) {
   return (
-    <div className="scrollbar-none flex items-center gap-2 overflow-x-auto pb-1">
-      <div className="mr-2 flex shrink-0 items-center gap-2">
+    <div className="grid gap-3 sm:grid-cols-[120px_minmax(0,1fr)] sm:items-start sm:gap-5">
+      <div className="flex min-h-9 items-center gap-2">
         <SlidersHorizontal
           size={14}
           className="text-forge-subtle"
@@ -391,21 +408,23 @@ function FilterRow({
         </span>
       </div>
 
-      {values.map((value) => (
-        <button
-          key={value}
-          type="button"
-          onClick={() => onChange(value)}
-          className={[
-            "shrink-0 rounded-forge-sm border px-3 py-2 text-xs font-medium transition",
-            activeValue === value
-              ? "border-forge-accent bg-forge-accent-soft text-forge-accent"
-              : "border-forge-border bg-forge-surface text-forge-muted hover:text-forge-text",
-          ].join(" ")}
-        >
-          {value}
-        </button>
-      ))}
+      <div className="scrollbar-none flex gap-2.5 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible">
+        {values.map((value) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => onChange(value)}
+            className={[
+              "shrink-0 rounded-forge-sm border px-3 py-2 text-xs font-medium transition",
+              activeValue === value
+                ? "border-forge-accent bg-forge-accent-soft text-forge-accent"
+                : "border-forge-border bg-forge-surface text-forge-muted hover:text-forge-text",
+            ].join(" ")}
+          >
+            {value}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

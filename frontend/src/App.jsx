@@ -21,6 +21,7 @@ function App() {
       <Route element={<AppLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="/components" element={<ComponentsPage />} />
+        <Route path="/components/category/:category" element={<ComponentsPage />} />
         <Route path="/components/new" element={<AddComponentPage />} />
         <Route path="/components/:slug/edit" element={<EditComponentPage />} />
         <Route path="/components/:slug" element={<ComponentDetailPage />} />
