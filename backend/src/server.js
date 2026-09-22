@@ -33,12 +33,12 @@ app.use("/api/animations", animationRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-const startServer = async () => {
-  await connectDB();
+await connectDB();
 
+if (!process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log(`FrontForge API running on port ${PORT}`);
   });
-};
+}
 
-startServer();
+export default app;
