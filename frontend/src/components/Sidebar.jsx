@@ -28,9 +28,9 @@ function Sidebar() {
             </div>
 
             <div>
-              <h1 className="font-display text-lg font-semibold tracking-[-0.035em]">
+              <p className="font-display text-lg font-semibold tracking-[-0.035em]">
                 FrontForge
-              </h1>
+              </p>
 
               <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-forge-muted">
                 Workspace / v0.0
@@ -39,7 +39,7 @@ function Sidebar() {
           </div>
         </div>
 
-        <nav className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+        <nav aria-label="Primary navigation" className="scrollbar-none flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
           {navigation.map((item) => {
             const Icon = item.icon;
 

@@ -196,13 +196,14 @@ function AnimationDetailPage() {
       </header>
 
       <div className="sticky top-0 z-10 border-b border-forge-border bg-forge-bg/95 py-3 backdrop-blur">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex gap-1 overflow-x-auto">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="scrollbar-none flex gap-1 overflow-x-auto">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
+                aria-pressed={activeTab === tab}
                 className={[
                   "shrink-0 rounded-forge-sm px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition",
                   activeTab === tab

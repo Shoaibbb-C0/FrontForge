@@ -116,6 +116,20 @@ function AnimationsPage() {
     setSearchParams,
   ]);
 
+  useEffect(() => {
+    const handleHistoryChange = () => {
+      const params = new URLSearchParams(window.location.search);
+      setSearch(params.get("search") || "");
+      setActiveLibrary(params.get("library") || "All");
+      setActiveTrigger(params.get("trigger") || "All");
+      setActiveDifficulty(params.get("difficulty") || "All");
+      setShowFavoritesOnly(params.get("favorites") === "true");
+    };
+
+    window.addEventListener("popstate", handleHistoryChange);
+    return () => window.removeEventListener("popstate", handleHistoryChange);
+  }, []);
+
   const filteredAnimations = useMemo(() => {
     return animations.filter((animation) => {
       const query = search.trim().toLowerCase();

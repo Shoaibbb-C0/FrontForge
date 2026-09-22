@@ -82,6 +82,19 @@ function ComponentsPage() {
     setSearchParams,
   ]);
 
+  useEffect(() => {
+    const handleHistoryChange = () => {
+      const params = new URLSearchParams(window.location.search);
+      setSearch(params.get("search") || "");
+      setActiveCategory(params.get("category") || "All");
+      setActiveDifficulty(params.get("difficulty") || "All");
+      setShowFavoritesOnly(params.get("favorites") === "true");
+    };
+
+    window.addEventListener("popstate", handleHistoryChange);
+    return () => window.removeEventListener("popstate", handleHistoryChange);
+  }, []);
+
   const handleFavoriteToggle = async (component) => {
     try {
       const response = await fetch(

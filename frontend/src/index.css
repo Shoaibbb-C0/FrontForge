@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
 
 @theme {
   /* COLORS */
@@ -81,6 +81,11 @@ select {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-forge-accent);
+  outline-offset: 3px;
 }
 
 ::selection {
