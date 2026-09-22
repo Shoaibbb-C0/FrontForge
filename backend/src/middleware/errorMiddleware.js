@@ -6,12 +6,21 @@ const notFound = (req, res, next) => {
 };
 
 const errorHandler = (err, req, res, next) => {
-  const statusCode =
-    res.statusCode === 200 ? 500 : res.statusCode;
+  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  let message = err.message;
+
+  if (err.name === "ValidationError" || err.name === "CastError") {
+    statusCode = 400;
+  }
+
+  if (err.code === 11000) {
+    statusCode = 409;
+    message = "A resource with this slug already exists";
+  }
 
   res.status(statusCode).json({
     success: false,
-    message: err.message,
+    message,
     ...(process.env.NODE_ENV === "development" && {
       stack: err.stack,
     }),

@@ -7,7 +7,6 @@ import ComponentsPage from "./pages/ComponentsPage";
 import AnimationsPage from "./pages/AnimationsPage";
 import ReferencesPage from "./pages/ReferencesPage";
 import NotesPage from "./pages/NotesPage";
-import ProjectsPage from "./pages/ProjectsPage";
 import FavoritesPage from "./pages/FavoritesPage";
 import ComponentDetailPage from "./pages/ComponentDetailPage";
 import AddComponentPage from "./pages/AddComponentPage";
@@ -15,6 +14,7 @@ import EditComponentPage from "./pages/EditComponentPage";
 import AnimationDetailPage from "./pages/AnimationDetailPage";
 import AddAnimationPage from "./pages/AddAnimationPage";
 import EditAnimationPage from "./pages/EditAnimationPage";
+import NotFoundPage from "./pages/NotFoundPage";
 function App() {
   return (
     <Routes>
@@ -30,9 +30,8 @@ function App() {
         <Route path="/animations/:slug" element={<AnimationDetailPage />} />
         <Route path="/references" element={<ReferencesPage />} />
         <Route path="/notes" element={<NotesPage />} />
-        <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
-        <Route path="/components" element={<ComponentDetailPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );

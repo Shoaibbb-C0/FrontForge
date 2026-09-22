@@ -2,7 +2,6 @@ import {
   Boxes,
   Clapperboard,
   FileText,
-  FolderKanban,
   Heart,
   LayoutDashboard,
   Library,
@@ -15,7 +14,6 @@ const navigation = [
   { label: "Animations", path: "/animations", icon: Clapperboard },
   { label: "References", path: "/references", icon: Library },
   { label: "Notes", path: "/notes", icon: FileText },
-  { label: "Projects", path: "/projects", icon: FolderKanban },
   { label: "Favorites", path: "/favorites", icon: Heart },
 ];
 

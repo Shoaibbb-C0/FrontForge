@@ -1,5 +1,15 @@
 import Component from "../models/Component.js";
 
+const writableFields = [
+  "name", "slug", "description", "level", "category", "difficulty",
+  "tags", "style", "industry", "code", "notes", "reference", "preview", "status",
+];
+
+const pickWritableFields = (body) =>
+  Object.fromEntries(
+    writableFields.filter((field) => Object.hasOwn(body, field)).map((field) => [field, body[field]]),
+  );
+
 export const getComponents = async (req, res, next) => {
   try {
     const components = await Component.find().sort({
@@ -92,7 +102,7 @@ export const updateComponent = async (req, res, next) => {
   try {
     const component = await Component.findOneAndUpdate(
       { slug: req.params.slug },
-      req.body,
+      pickWritableFields(req.body),
       {
         new: true,
         runValidators: true,

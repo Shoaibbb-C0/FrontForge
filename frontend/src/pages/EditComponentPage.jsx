@@ -215,6 +215,15 @@ function EditComponentPage() {
     );
   }
 
+  if (error && !formData.slug) {
+    return (
+      <div className="py-16 text-center">
+        <h1 className="font-display text-3xl font-semibold">Component unavailable.</h1>
+        <p className="mt-3 text-sm text-forge-muted">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <section>
       <header className="border-b border-forge-border pb-8">

@@ -1,5 +1,15 @@
 import Animation from "../models/Animation.js";
 
+const writableFields = [
+  "name", "slug", "description", "level", "library", "trigger", "category",
+  "difficulty", "tags", "code", "notes", "preview", "status",
+];
+
+const pickWritableFields = (body) =>
+  Object.fromEntries(
+    writableFields.filter((field) => Object.hasOwn(body, field)).map((field) => [field, body[field]]),
+  );
+
 export const getAnimations = async (req, res, next) => {
   try {
     const animations = await Animation.find().sort({
@@ -92,7 +102,7 @@ export const updateAnimation = async (req, res, next) => {
       {
         slug: req.params.slug,
       },
-      req.body,
+      pickWritableFields(req.body),
       {
         new: true,
         runValidators: true,

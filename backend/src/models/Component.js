@@ -14,6 +14,7 @@ const componentSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      match: [/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Slug must use lowercase letters, numbers, and hyphens"],
     },
 
     description: {
@@ -144,6 +145,10 @@ const componentSchema = new mongoose.Schema(
       url: {
         type: String,
         default: "",
+        validate: {
+          validator: (value) => !value || /^https?:\/\//i.test(value),
+          message: "Reference URL must start with http:// or https://",
+        },
       },
     },
 

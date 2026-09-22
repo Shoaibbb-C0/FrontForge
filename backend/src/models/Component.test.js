@@ -36,3 +36,12 @@ test("invalid preview modes fail validation", async () => {
   const component = new Component({ ...fields, preview: { type: "javascript" } });
   await assert.rejects(component.validate(), /is not a valid enum value/);
 });
+
+test("component slugs and reference URLs are validated", async () => {
+  const component = new Component({
+    ...fields,
+    slug: "Invalid Slug",
+    reference: { url: "javascript:alert(1)" },
+  });
+  await assert.rejects(component.validate(), /Slug must use lowercase letters/);
+});

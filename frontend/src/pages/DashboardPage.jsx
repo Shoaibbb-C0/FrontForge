@@ -6,31 +6,72 @@ import {
   Library,
   Plus,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
-const stats = [
+const statDefinitions = [
   {
     label: "Components",
-    value: "00",
+    key: "components",
     icon: Boxes,
   },
   {
     label: "Animations",
-    value: "00",
+    key: "animations",
     icon: Clapperboard,
   },
   {
     label: "References",
-    value: "00",
+    key: "references",
     icon: Library,
   },
   {
     label: "Notes",
-    value: "00",
+    key: "notes",
     icon: FileText,
   },
 ];
 
 function DashboardPage() {
+  const [counts, setCounts] = useState({ components: 0, animations: 0, references: 0, notes: 0 });
+
+  const API_URL = import.meta.env.VITE_API_URL || "";
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const [componentResponse, animationResponse] = await Promise.all([
+          fetch(`${API_URL}/api/components`),
+          fetch(`${API_URL}/api/animations`),
+        ]);
+        if (!componentResponse.ok || !animationResponse.ok) return;
+
+        const [componentResult, animationResult] = await Promise.all([
+          componentResponse.json(),
+          animationResponse.json(),
+        ]);
+        const components = componentResult.data ?? [];
+        const animations = animationResult.data ?? [];
+
+        setCounts({
+          components: components.length,
+          animations: animations.length,
+          references: components.filter((item) => item.reference?.url).length,
+          notes: components.filter((item) => Object.values(item.notes ?? {}).some(Boolean)).length + animations.filter((item) => Object.values(item.notes ?? {}).some(Boolean)).length,
+        });
+      } catch (error) {
+        console.error("Dashboard count error:", error);
+      }
+    };
+
+    fetchCounts();
+  }, [API_URL]);
+
+  const stats = statDefinitions.map((stat) => ({
+    ...stat,
+    value: counts[stat.key].toString().padStart(2, "0"),
+  }));
+
   return (
     <section>
       <header className="border-b border-forge-border pb-8">
@@ -39,10 +80,10 @@ function DashboardPage() {
             Workspace / Dashboard
           </span>
 
-          <button className="flex items-center gap-2 rounded-forge-md bg-forge-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-forge-accent-strong">
+          <Link to="/components/new" className="flex items-center gap-2 rounded-forge-md bg-forge-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-forge-accent-strong">
             <Plus size={16} />
             Add resource
-          </button>
+          </Link>
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[1fr_400px] xl:items-end">
@@ -106,9 +147,9 @@ function DashboardPage() {
               </h3>
             </div>
 
-            <button className="text-forge-muted transition hover:text-forge-text">
+            <Link to="/components" aria-label="Open component library" className="text-forge-muted transition hover:text-forge-text">
               <ArrowUpRight size={19} />
-            </button>
+            </Link>
           </div>
 
           <div className="mt-12 rounded-forge-md border border-forge-border bg-forge-bg p-5">
