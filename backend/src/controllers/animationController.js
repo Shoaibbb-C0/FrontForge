@@ -104,7 +104,7 @@ export const updateAnimation = async (req, res, next) => {
       },
       pickWritableFields(req.body),
       {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
       },
     );

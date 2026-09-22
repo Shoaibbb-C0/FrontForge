@@ -104,7 +104,7 @@ export const updateComponent = async (req, res, next) => {
       { slug: req.params.slug },
       pickWritableFields(req.body),
       {
-        new: true,
+        returnDocument: "after",
         runValidators: true,
       },
     );
