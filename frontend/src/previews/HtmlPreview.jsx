@@ -3,6 +3,7 @@ function HtmlPreview({
   css = "",
   javascript = "",
   externalScripts = [],
+  title = "FrontForge preview",
 }) {
   const scriptTags = externalScripts
     .map(
@@ -76,7 +77,7 @@ function HtmlPreview({
 
   return (
     <iframe
-      title="FrontForge component preview"
+      title={title}
       srcDoc={document}
       sandbox={
         hasJavaScript

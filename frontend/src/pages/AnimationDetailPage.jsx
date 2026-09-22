@@ -357,11 +357,16 @@ function CodeTab({ animation }) {
 }
 
 function CodeBlock({ title, code }) {
+  const [copyLabel, setCopyLabel] = useState("Copy");
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(code);
+      setCopyLabel("Copied");
+      window.setTimeout(() => setCopyLabel("Copy"), 1600);
     } catch (error) {
       console.error("Animation copy failed:", error);
+      setCopyLabel("Copy failed");
     }
   };
 
@@ -378,7 +383,7 @@ function CodeBlock({ title, code }) {
           className="flex items-center gap-2 text-xs text-forge-muted transition hover:text-forge-text"
         >
           <Copy size={14} />
-          Copy
+          {copyLabel}
         </button>
       </div>
 

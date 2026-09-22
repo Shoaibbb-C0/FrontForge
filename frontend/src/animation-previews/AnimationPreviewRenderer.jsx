@@ -15,7 +15,7 @@ const reducedMotionCss = `
 import animationPreviewRegistry from "./animationPreviewRegistry";
 
 const GSAP_CDN =
-  "https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js";
+  "https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js";
 
 function AnimationPreviewRenderer({ animation }) {
   const preview = animation?.preview;
@@ -48,11 +48,14 @@ function AnimationPreviewRenderer({ animation }) {
     const isGsap =
       animation.library?.toLowerCase() === "gsap";
 
+    const usesJavaScript =
+      isGsap || animation.library?.toLowerCase() === "javascript";
+
     const externalScripts = isGsap
       ? [GSAP_CDN]
       : [];
 
-    const javascript = isGsap
+    const javascript = usesJavaScript
       ? `
       const prefersReducedMotion =
         window.matchMedia(
@@ -71,6 +74,7 @@ function AnimationPreviewRenderer({ animation }) {
         css={previewCss}
         javascript={javascript}
         externalScripts={externalScripts}
+        title={`${animation.name || "Animation"} preview`}
       />
     );
   }

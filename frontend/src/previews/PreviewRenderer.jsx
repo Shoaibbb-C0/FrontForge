@@ -25,6 +25,7 @@ function PreviewRenderer({ component }) {
       <HtmlPreview
         html={preview.html}
         css={preview.css}
+        title={`${component.name || "Component"} preview`}
       />
     );
   }
