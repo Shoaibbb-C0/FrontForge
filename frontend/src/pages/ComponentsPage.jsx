@@ -1,5 +1,6 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import ComponentCard from "../components/ComponentCard";
 
@@ -17,10 +18,20 @@ const categories = [
 ];
 
 function ComponentsPage() {
-  const [activeDifficulty, setActiveDifficulty] = useState("All");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [activeDifficulty, setActiveDifficulty] = useState(
+    () => searchParams.get("difficulty") || "All",
+  );
   const [components, setComponents] = useState([]);
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [search, setSearch] = useState(
+    () => searchParams.get("search") || "",
+  );
+  const [activeCategory, setActiveCategory] = useState(
+    () => searchParams.get("category") || "All",
+  );
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(
+    () => searchParams.get("favorites") === "true",
+  );
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -54,6 +65,23 @@ function ComponentsPage() {
     fetchComponents();
   }, [API_URL]);
 
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (search.trim()) params.set("search", search.trim());
+    if (activeCategory !== "All") params.set("category", activeCategory);
+    if (activeDifficulty !== "All") params.set("difficulty", activeDifficulty);
+    if (showFavoritesOnly) params.set("favorites", "true");
+
+    setSearchParams(params, { replace: true });
+  }, [
+    search,
+    activeCategory,
+    activeDifficulty,
+    showFavoritesOnly,
+    setSearchParams,
+  ]);
+
   const handleFavoriteToggle = async (component) => {
     try {
       const response = await fetch(
@@ -83,7 +111,7 @@ function ComponentsPage() {
     return components.filter((component) => {
       const matchesCategory =
         activeCategory === "All" ||
-        component.category.toLowerCase() === activeCategory.toLowerCase();
+        component.category?.toLowerCase() === activeCategory.toLowerCase();
       const matchesDifficulty =
         activeDifficulty === "All" ||
         component.difficulty?.toLowerCase() === activeDifficulty.toLowerCase();
@@ -92,13 +120,31 @@ function ComponentsPage() {
 
       const matchesSearch =
         !query ||
-        component.name.toLowerCase().includes(query) ||
-        component.description.toLowerCase().includes(query) ||
-        component.tags?.some((tag) => tag.toLowerCase().includes(query));
+        component.name?.toLowerCase().includes(query) ||
+        component.description?.toLowerCase().includes(query) ||
+        component.tags?.some((tag) =>
+          String(tag).toLowerCase().includes(query),
+        );
 
-      return matchesCategory && matchesSearch && matchesDifficulty;
+      const matchesFavorite =
+        !showFavoritesOnly || component.isFavorite;
+
+      return matchesCategory && matchesSearch && matchesDifficulty && matchesFavorite;
     });
-  }, [components, search, activeCategory, activeDifficulty]);
+  }, [components, search, activeCategory, activeDifficulty, showFavoritesOnly]);
+
+  const hasActiveFilters =
+    search.trim() ||
+    activeCategory !== "All" ||
+    activeDifficulty !== "All" ||
+    showFavoritesOnly;
+
+  const clearFilters = () => {
+    setSearch("");
+    setActiveCategory("All");
+    setActiveDifficulty("All");
+    setShowFavoritesOnly(false);
+  };
 
   return (
     <section>
@@ -195,7 +241,36 @@ function ComponentsPage() {
               </button>
             ),
           )}
+
+          <button
+            type="button"
+            onClick={() => setShowFavoritesOnly((current) => !current)}
+            className={[
+              "ml-0 rounded-forge-sm border px-3 py-2 text-xs font-medium transition sm:ml-2",
+              showFavoritesOnly
+                ? "border-forge-accent bg-forge-accent-soft text-forge-accent"
+                : "border-forge-border bg-forge-surface text-forge-muted hover:text-forge-text",
+            ].join(" ")}
+          >
+            Favorites only
+          </button>
         </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-4 border-b border-forge-border py-4">
+        <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle">
+          {filteredComponents.length.toString().padStart(2, "0")} {filteredComponents.length === 1 ? "result" : "results"}
+        </p>
+
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="font-mono text-[10px] uppercase tracking-[0.12em] text-forge-muted transition hover:text-forge-accent"
+          >
+            Clear filters
+          </button>
+        )}
       </div>
 
       <div className="py-8">

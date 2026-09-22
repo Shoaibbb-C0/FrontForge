@@ -26,14 +26,15 @@ function ComponentDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdatingFavorite, setIsUpdatingFavorite] = useState(false);
+
+  const API_URL = import.meta.env.VITE_API_URL || "";
 
   useEffect(() => {
     const fetchComponent = async () => {
       try {
         setIsLoading(true);
         setError("");
-
-        const API_URL = import.meta.env.VITE_API_URL || "";
 
         const response = await fetch(
           `${API_URL}/api/components/${slug}`
@@ -61,7 +62,29 @@ function ComponentDetailPage() {
     };
 
     fetchComponent();
-  }, [slug]);
+  }, [API_URL, slug]);
+
+  const handleFavoriteToggle = async () => {
+    if (!component || isUpdatingFavorite) return;
+
+    try {
+      setIsUpdatingFavorite(true);
+      const response = await fetch(
+        `${API_URL}/api/components/${component.slug}/favorite`,
+        { method: "PATCH" },
+      );
+
+      if (!response.ok) throw new Error("Failed to update favorite");
+
+      const result = await response.json();
+      setComponent(result.data);
+    } catch (error) {
+      console.error("Component favorite update error:", error);
+      setError("FrontForge couldn't update this favorite.");
+    } finally {
+      setIsUpdatingFavorite(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (!component || isDeleting) {
@@ -78,9 +101,6 @@ function ComponentDetailPage() {
 
     try {
       setIsDeleting(true);
-
-      const API_URL =
-        import.meta.env.VITE_API_URL || "";
 
       const response = await fetch(
         `${API_URL}/api/components/${component.slug}`,
@@ -218,10 +238,15 @@ function ComponentDetailPage() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              aria-label="Favorite component"
-              className="text-forge-muted transition hover:text-forge-text"
+              aria-label={component.isFavorite ? `Remove ${component.name} from favorites` : `Add ${component.name} to favorites`}
+              onClick={handleFavoriteToggle}
+              disabled={isUpdatingFavorite}
+              className={[
+                "transition disabled:cursor-not-allowed disabled:opacity-50",
+                component.isFavorite ? "text-forge-accent" : "text-forge-muted hover:text-forge-text",
+              ].join(" ")}
             >
-              <Heart size={18} />
+              <Heart size={18} fill={component.isFavorite ? "currentColor" : "none"} />
             </button>
 
             <Link

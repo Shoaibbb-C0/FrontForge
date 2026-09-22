@@ -1,4 +1,4 @@
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Heart, Search, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   Link,
@@ -125,7 +125,7 @@ function AnimationsPage() {
         animation.name?.toLowerCase().includes(query) ||
         animation.description?.toLowerCase().includes(query) ||
         animation.tags?.some((tag) =>
-          tag.toLowerCase().includes(query),
+          String(tag).toLowerCase().includes(query),
         );
 
       const normalizedLibrary =
@@ -188,6 +188,30 @@ function AnimationsPage() {
     setShowFavoritesOnly(false);
 
     setSearchParams({}, { replace: true });
+  };
+
+  const handleFavoriteToggle = async (animation) => {
+    try {
+      const response = await fetch(
+        `${API_URL}/api/animations/${animation.slug}/favorite`,
+        { method: "PATCH" },
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update favorite");
+      }
+
+      const result = await response.json();
+
+      setAnimations((currentAnimations) =>
+        currentAnimations.map((item) =>
+          item._id === result.data._id ? result.data : item,
+        ),
+      );
+    } catch (error) {
+      console.error("Animation favorite update error:", error);
+      setError("FrontForge couldn't update that favorite. Please try again.");
+    }
   };
 
   return (
@@ -324,6 +348,7 @@ function AnimationsPage() {
               <AnimationCard
                 key={animation._id}
                 animation={animation}
+                onFavoriteToggle={handleFavoriteToggle}
               />
             ))}
           </div>
@@ -371,22 +396,31 @@ function FilterRow({
   );
 }
 
-function AnimationCard({ animation }) {
+function AnimationCard({ animation, onFavoriteToggle }) {
   const libraryLabel =
     animation.library === "framer-motion"
       ? "Framer Motion"
       : animation.library?.toUpperCase();
 
   return (
-    <Link
-      to={`/animations/${animation.slug}`}
-      className="block"
-    >
-      <article className="overflow-hidden rounded-forge-lg border border-forge-border bg-forge-surface transition hover:border-forge-accent/40">
+      <article className="group relative overflow-hidden rounded-forge-lg border border-forge-border bg-forge-surface transition hover:border-forge-accent/40">
+        <button
+          type="button"
+          aria-label={animation.isFavorite ? `Remove ${animation.name} from favorites` : `Add ${animation.name} to favorites`}
+          onClick={() => onFavoriteToggle?.(animation)}
+          className={[
+            "absolute right-4 top-4 z-10 rounded-forge-sm border border-forge-border bg-forge-surface p-2 transition",
+            animation.isFavorite ? "text-forge-accent" : "text-forge-muted hover:text-forge-text",
+          ].join(" ")}
+        >
+          <Heart size={17} fill={animation.isFavorite ? "currentColor" : "none"} />
+        </button>
+
+        <Link to={`/animations/${animation.slug}`} className="block">
         <div className="flex min-h-[220px] items-center justify-center border-b border-forge-border bg-forge-bg p-6">
           <div className="flex h-full min-h-[170px] w-full items-center justify-center rounded-forge-md border border-dashed border-forge-border bg-forge-surface-soft">
             <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-forge-subtle">
-              Animation Preview
+              Open live preview
             </span>
           </div>
         </div>
@@ -404,9 +438,11 @@ function AnimationCard({ animation }) {
             </span>
           </div>
 
-          <h2 className="mt-4 font-display text-xl font-semibold tracking-[-0.035em]">
-            {animation.name}
-          </h2>
+          <div className="mt-4 flex items-start justify-between gap-4">
+            <h2 className="font-display text-xl font-semibold tracking-[-0.035em]">
+              {animation.name}
+            </h2>
+          </div>
 
           <p className="mt-3 line-clamp-2 text-sm leading-6 text-forge-muted">
             {animation.description}
@@ -423,8 +459,8 @@ function AnimationCard({ animation }) {
             ))}
           </div>
         </div>
+        </Link>
       </article>
-    </Link>
   );
 }
 
